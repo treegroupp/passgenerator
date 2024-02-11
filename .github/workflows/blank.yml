@@ -1,0 +1,116 @@
+import random 
+import string 
+
+def check_password_complexity(password): 
+    has_lowercase = any(char.islower() for char in password) 
+    has_uppercase = any(char.isupper() for char in password) 
+    has_digit = any(char.isdigit() for char in password) 
+    has_special = any(char in string.punctuation for char in password)
+    length = len(password)
+
+    # Рассчитываем процент сложности
+    criteria_met = sum([has_lowercase, has_uppercase, has_digit, has_special, length >= 8])
+    total_criteria = 5  # Общее количество критериев сложности
+    complexity_percentage = (criteria_met / total_criteria) * 100
+
+    # Уточняем сложность на основе длины пароля
+    if length <= 5:
+        return "Сложность пароля: Низкая (длина пароля меньше или равна 5)"
+    elif length >= 40:
+        return f"Сложность пароля: Высокая ({complexity_percentage:.2f}% достигнутых критериев)"
+    elif complexity_percentage >= 45:
+        return f"Сложность пароля: Высокая ({complexity_percentage:.2f}% достигнутых критериев)"
+    elif complexity_percentage >= 30:
+        return f"Сложность пароля: Средняя ({complexity_percentage:.2f}% достигнутых критериев)"
+    else:
+        return f"Сложность пароля: Низкая ({complexity_percentage:.2f}% достигнутых критериев)"
+
+def generate_password(length, option, keyword=None): 
+    password = '' 
+    if option == 1: 
+        characters = string.ascii_letters 
+    elif option == 2: 
+        characters = string.digits 
+    elif option == 3: 
+        characters = string.ascii_letters + string.digits 
+    elif option == 4 and keyword: 
+        if ' ' in keyword:
+            print("Пробелы в ключевом запросе не допускаются. Пожалуйста, перезапустите программу.")
+            exit()
+        characters = keyword 
+    else: 
+        raise ValueError("Неверная опция") 
+
+    if length < 5 or length > 100:
+        raise ValueError("Длина пароля должна быть от 5 до 100 символов")
+
+    for i in range(length): 
+        password += random.choice(characters) 
+        if (i+1) % 5 == 0 and i != length-1: 
+            password += '-' 
+    return password 
+
+def handle_password_generation(): 
+    num_passwords = int(input("Введите количество паролей для генерации: ")) 
+    length = int(input("Введите длину пароля (от 5 до 100): ")) 
+    print("Выберите тип пароля:") 
+    print("1. Только буквы") 
+    print("2. Только цифры") 
+    print("3. Буквы и цифры") 
+    print("4. По ключевому запросу") 
+    password_option = int(input("Выберите опцию: ")) 
+
+    if password_option == 4: 
+        keyword = input("Введите ключевой запрос: ") 
+    else: 
+        keyword = None 
+
+    if password_option in [1, 2, 3, 4]: 
+        print("Сгенерированные пароли:") 
+        for _ in range(num_passwords): 
+            password = generate_password(length, password_option, keyword) 
+            complexity = check_password_complexity(password)
+            print(f"Пароль: {password}, {complexity}") 
+    else: 
+        print("Неверная опция.") 
+
+def main(): 
+    print("Генератор Паролей Приветствует вас!!") 
+    print("1. Проверить пароль на сложность") 
+    print("2. Сгенерировать пароль") 
+    print("3. Генерировать несколько паролей") 
+    choice = int(input("Выберите опцию: ")) 
+
+    if choice == 1: 
+        password = input("Введите пароль для проверки: ") 
+        complexity = check_password_complexity(password) 
+        print(complexity) 
+
+    elif choice == 2: 
+        length = int(input("Введите длину пароля (от 5 до 100): ")) 
+        print("Выберите тип пароля:") 
+        print("1. Только буквы") 
+        print("2. Только цифры") 
+        print("3. Буквы и цифры") 
+        print("4. По ключевому запросу") 
+        password_option = int(input("Выберите опцию: ")) 
+
+        if password_option == 4: 
+            keyword = input("Введите ключевой запрос: ") 
+        else: 
+            keyword = None 
+
+        if password_option in [1, 2, 3, 4]: 
+            password = generate_password(length, password_option, keyword) 
+            complexity = check_password_complexity(password)
+            print(f"Ваш сгенерированный пароль: {password}, {complexity}") 
+        else: 
+            print("Неверная опция.") 
+
+    elif choice == 3: 
+        handle_password_generation() 
+
+    else: 
+        print("Неверная опция.") 
+
+main()
